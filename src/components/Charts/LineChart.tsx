@@ -4,7 +4,6 @@ import Loading from "../Loading";
 
 interface props {
   data: Array<any>;
-  title: string;
 }
 
 const options = {

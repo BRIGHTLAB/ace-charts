@@ -19,7 +19,7 @@ const Input = (props: Props) => {
         )}
       >
         <input
-          className="w-full outline-none font-medium placeholder:text-[#D6D6D6]"
+          className="w-full outline-none font-medium placeholder:text-[#D6D6D6] bg-transparent"
           {...rest}
           onChange={onChange}
         />

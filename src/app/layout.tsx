@@ -36,8 +36,11 @@ export default function RootLayout({
           "bg-grey-light md:text-[13px] xl:text-[16px]"
         )}
       >
-        <SessionProvider>{children}</SessionProvider>
-        <ToastContainer />
+        <div className="min-h-screen py-5 xl:py-10 relative">
+          <SessionProvider>{children}</SessionProvider>
+
+          <ToastContainer />
+        </div>
       </body>
     </html>
   );
