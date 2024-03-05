@@ -22,7 +22,7 @@ export default function LineChart(props: props) {
     <Chart
       chartType="LineChart"
       width="100%"
-      height="100%"
+      height="90%"
       data={props.data}
       loader={<Loading />}
       options={options}

@@ -108,7 +108,7 @@ const Page = (props: Props) => {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 xl:gap-10">
           {data.map((obj) => (
             <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
-              <span className="text-md font-semibold">{obj.title}</span>
+              <span className="text-2xl font-semibold">{obj.title}</span>
 
               <LineChart data={transformData(obj)} />
             </div>
