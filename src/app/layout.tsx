@@ -3,10 +3,8 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Head from "next/head";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 import clsx from "clsx";
-import SessionProvider from "@/providers/SessionProvider";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -36,11 +34,7 @@ export default function RootLayout({
           "bg-grey-light md:text-[13px] xl:text-[16px]"
         )}
       >
-        <div className="min-h-screen py-5 xl:py-10 relative">
-          <SessionProvider>{children}</SessionProvider>
-
-          <ToastContainer />
-        </div>
+        <div className="min-h-screen py-5 xl:py-10 relative">{children}</div>
       </body>
     </html>
   );

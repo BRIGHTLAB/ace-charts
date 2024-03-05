@@ -4,7 +4,6 @@ import LineChart from "@/components/Charts/LineChart";
 import Container from "@/components/Container";
 import Loading from "@/components/Loading";
 import Logo from "@/components/Logo/Logo";
-import { signOut } from "next-auth/react";
 import React, { useState } from "react";
 
 type Props = {};
@@ -88,19 +87,13 @@ const transformData = (data: StatisticsData): any[][] => {
 };
 
 const Page = (props: Props) => {
-  const [logoutBtnLoading, setLogoutBtnLoading] = useState(false);
-  const handleLogout = async () => {
-    setLogoutBtnLoading(true);
-    await signOut();
-    setLogoutBtnLoading(false);
-  };
   return (
     <Container>
       <div className="flex flex-col gap-5">
         <div className="flex items-center justify-center">
           <Logo />
         </div>
-        <div className="flex justify-between items-center">
+        <div className="flex items-center">
           <div className="w-[6rem] h-12 self-end">
             <Button variant={"secondary"} rounded="none" disabled={false}>
               Monthly
@@ -111,16 +104,11 @@ const Page = (props: Props) => {
               Yearly
             </Button>
           </div>
-          <div className="w-[10.375rem] h-12 self-end ml-2">
-            <Button disabled={logoutBtnLoading} onClick={handleLogout}>
-              {logoutBtnLoading ? <Loading /> : "Log Out"}
-            </Button>
-          </div>
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 xl:gap-10">
           {data.map((obj) => (
             <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
-              <span className="text-sm">{obj.title}</span>
+              <span className="text-md font-semibold">{obj.title}</span>
 
               <LineChart data={transformData(obj)} />
             </div>
