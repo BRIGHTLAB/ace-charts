@@ -116,7 +116,6 @@ const Page = (props: Props) => {
     refetchOnWindowFocus: false,
   });
 
-  console.log(typesData);
   const results = useQueries<StatisticsData[]>(
     (typesData || []).map((type: ChartType) => ({
       queryKey: ["Chart", type.id, dateValue],
@@ -183,7 +182,6 @@ const Page = (props: Props) => {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 xl:gap-10">
           {results.length > 0 && !typesDataLoading ? (
             results.map((obj, idx) => {
-              console.log(obj);
               if (!obj.data) return;
               const chartData = obj.data as StatisticsData;
               if (Object.keys(chartData.data).length < 1) return;
