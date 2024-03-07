@@ -1,5 +1,6 @@
 "use client";
 import Button from "@/components/Button";
+import ChartSkeleton from "@/components/Charts/ChartSkeleton";
 import LineChart from "@/components/Charts/LineChart";
 import Container from "@/components/Container";
 import FilterItem from "@/components/FilterItem";
@@ -180,27 +181,37 @@ const Page = (props: Props) => {
           </div>
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 xl:gap-10">
-          {results.map((obj, idx) => {
-            console.log(obj);
-            if (!obj.data) return;
-            const chartData = obj.data as StatisticsData;
-            return (
-              <div
-                className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md"
-                key={idx}
-              >
-                <span className="text-2xl font-semibold">
-                  {chartData.title}
-                </span>
-
-                {Object.keys(chartData.data).length > 0 ? (
+          {results.length > 0 && !typesDataLoading ? (
+            results.map((obj, idx) => {
+              console.log(obj);
+              if (!obj.data) return;
+              const chartData = obj.data as StatisticsData;
+              if (Object.keys(chartData.data).length < 1) return;
+              return (
+                <div
+                  className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md"
+                  key={idx}
+                >
+                  <span className="text-2xl font-semibold">
+                    {chartData.title}
+                  </span>
                   <LineChart data={transformChartData(chartData)} />
-                ) : (
-                  <></>
-                )}
+                </div>
+              );
+            })
+          ) : (
+            <>
+              <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
+                <ChartSkeleton />
               </div>
-            );
-          })}
+              <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
+                <ChartSkeleton />
+              </div>
+              <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
+                <ChartSkeleton />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </Container>
