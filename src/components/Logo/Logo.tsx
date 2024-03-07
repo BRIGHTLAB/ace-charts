@@ -5,7 +5,7 @@ type Props = {};
 
 const Logo = (props: Props) => {
   return (
-    <div className="relative h-[6.375rem] aspect-[7.93/1] max-w-[100%]">
+    <div className="relative h-[4.375rem] aspect-[7.93/1] max-w-[100%]">
       <Image
         fill
         className="object-contain"

@@ -5,6 +5,7 @@ import "./globals.css";
 import Head from "next/head";
 
 import clsx from "clsx";
+import { QueryClient, QueryClientProvider } from "react-query";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -17,6 +18,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const queryClient = new QueryClient();
   return (
     <html lang="en">
       <Head>
@@ -34,7 +36,9 @@ export default function RootLayout({
           "bg-grey-light md:text-[13px] xl:text-[16px]"
         )}
       >
-        <div className="min-h-screen py-5 xl:py-10 relative">{children}</div>
+        <QueryClientProvider client={queryClient}>
+          <div className="min-h-screen py-5 xl:py-10 relative">{children}</div>
+        </QueryClientProvider>
       </body>
     </html>
   );
