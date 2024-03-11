@@ -7,31 +7,32 @@ interface props {
 }
 
 const options = {
-  curveType: "function",
+  bars: "vertical",
   legend: { position: "top", alignment: "end" },
   animation: {
     startup: true,
     easing: "inAndOut",
     duration: 300, // Animation duration in milliseconds
   },
-  chartArea: { width: "80%", height: "80%" },
   vAxis: {
+    format: "short", // Use 'short' format for abbreviated numbers
     viewWindow: {
       min: 0, // Set the minimum value of the y-axis to 0
     },
   },
+  chartArea: { width: "80%", height: "80%" },
+  bar: { groupWidth: "20%" }, // width of bars here
 };
 
-export default function LineChart(props: props) {
-  console.log(props.data);
+export default function ColumnChart(props: props) {
   return (
     <Chart
-      chartType="LineChart"
+      chartType="ColumnChart"
       width="100%"
       height="90%"
-      data={props.data}
       loader={<Loading />}
       options={options}
+      data={props.data}
     />
   );
 }

@@ -5,34 +5,41 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const transformChartData = (data: StatisticsData): any[][] => {
+export const transformChartData = (
+  data: StatisticsData
+): (string | number)[][] => {
   const transformedData: any[][] = [["Month"]];
   const countries: string[] = [];
-  const years = Object.keys(data.data);
-  years.forEach((year) => {
-    const months = data.data[year];
-    Object.keys(months).forEach((month) => {
-      const votes = months[month];
-      votes.forEach(([country, voteCount]: [string, number]) => {
+
+  // add countries
+  // [0] = ["KSA","LEBANON","USA"]
+  Object.entries(data.data).forEach(([year, yearData]) => {
+    Object.entries(yearData).forEach(([month, monthData]) => {
+      monthData.forEach(([country]) => {
         if (!countries.includes(country)) {
           countries.push(country);
         }
       });
     });
   });
-  transformedData[0] = transformedData[0].concat(countries);
-  years.forEach((year, index) => {
-    const months = data.data[year];
-    Object.keys(months).forEach((month, monthIndex) => {
-      const votes = months[month];
-      transformedData[monthIndex + 1] = transformedData[monthIndex + 1] || [];
-      transformedData[monthIndex + 1][0] = `${month} ${year}`;
-      votes.forEach(([country, voteCount]: [string, number]) => {
-        const countryIndex = countries.indexOf(country);
-        transformedData[monthIndex + 1][countryIndex + 1] = voteCount;
+
+  // add all values
+  // ["2024",12,12,12]
+  Object.entries(data.data).forEach(([year, yearData]) => {
+    Object.entries(yearData).forEach(([month, monthData]) => {
+      const monthYear = `${month}`;
+      transformedData.push([monthYear]);
+      countries.forEach((country) => {
+        const voteCount = monthData.find(([c]) => c === country);
+        console.log(voteCount);
+        transformedData[transformedData.length - 1].push(
+          voteCount ? voteCount[1] : 0
+        );
       });
     });
   });
 
+  transformedData[0].push(...countries);
+  console.log("data", transformedData);
   return transformedData;
 };

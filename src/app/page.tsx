@@ -1,6 +1,7 @@
 "use client";
 import Button from "@/components/Button";
 import ChartSkeleton from "@/components/Charts/ChartSkeleton";
+import ColumnChart from "@/components/Charts/ColumnChart";
 import LineChart from "@/components/Charts/LineChart";
 import Container from "@/components/Container";
 import FilterItem from "@/components/FilterItem";
@@ -13,13 +14,6 @@ import { UseQueryResult, useQueries, useQuery } from "react-query";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 
 type Props = {};
-
-type FilterOptions = {
-  label: string;
-  value: DateFilter;
-  min_date: Date;
-  max_date: Date;
-};
 
 const data: StatisticsData[] = [
   {
@@ -58,12 +52,12 @@ const data: StatisticsData[] = [
   },
 ];
 
-const filters: FilterOptions[] = [
+const intervalFilters: IntervalFilterOption[] = [
   {
     label: "Daily",
     value: "day",
     min_date: dayjs().toDate(),
-    max_date: dayjs().add(10, "day").toDate(),
+    max_date: dayjs().add(5, "day").toDate(),
   },
   {
     label: "Weekly",
@@ -91,20 +85,37 @@ const filters: FilterOptions[] = [
   },
 ];
 
+const chartRenderTypes: FilterOption[] = [
+  {
+    value: 0,
+    label: "Bars",
+  },
+  {
+    value: 1,
+    label: "Lines",
+  },
+];
+
 const fetcher = (url: string) =>
   fetch(`${process.env.BASE_URL}/api${url}`).then((res) => res.json());
 
-type DateFilter = "month" | "year" | "day" | "week" | "quarter";
-
 const Page = (props: Props) => {
-  const [dateValue, setDateValue] = useState<DateValueType>({
-    startDate: filters[2].min_date,
-    endDate: filters[2].max_date,
-  });
+  const [dateValue, setDateValue] = useState<DateValueType | null>(null);
 
-  const [selectedFilter, setSelectedFilter] = useState<FilterOptions>(
-    filters[2]
+  const [interval, setInterval] = useState<IntervalFilterOption | null>(null);
+
+  const [chartRenderType, setChartRenderType] = useState<FilterOption | null>(
+    null
   );
+
+  useEffect(() => {
+    setDateValue({
+      startDate: intervalFilters[0].min_date,
+      endDate: intervalFilters[0].max_date,
+    });
+    setInterval(intervalFilters[0]);
+    setChartRenderType(chartRenderTypes[0]);
+  }, []);
 
   const {
     isLoading: typesDataLoading,
@@ -124,7 +135,7 @@ const Page = (props: Props) => {
           `/data?type=${type.id}&from=${dayjs(dateValue?.startDate).format(
             "YYYY-MM-DD"
           )}&to=${dayjs(dateValue?.endDate).format("YYYY-MM-DD")}&filter=${
-            selectedFilter.value
+            interval?.value
           }`
         ),
       staleTime: Infinity,
@@ -134,12 +145,12 @@ const Page = (props: Props) => {
   );
 
   useEffect(() => {
-    if (!selectedFilter) return;
+    if (!interval) return;
     setDateValue({
-      startDate: selectedFilter.min_date,
-      endDate: selectedFilter.max_date,
+      startDate: interval.min_date,
+      endDate: interval.max_date,
     });
-  }, [selectedFilter]);
+  }, [interval]);
 
   const handleValueChange = (newValue: DateValueType) => {
     setDateValue(newValue);
@@ -147,9 +158,9 @@ const Page = (props: Props) => {
 
   const RenderDatePicker = () => (
     <Datepicker
-      minDate={selectedFilter.min_date}
-      maxDate={selectedFilter.max_date}
-      displayFormat="MM-DD-YYYY"
+      minDate={interval?.min_date}
+      maxDate={interval?.max_date}
+      displayFormat="MMM D, YYYY"
       showShortcuts={true}
       value={dateValue}
       onChange={handleValueChange}
@@ -157,7 +168,7 @@ const Page = (props: Props) => {
   );
   return (
     <Container>
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5 xl:gap-20">
         <div className="flex items-center justify-center">
           <Logo />
         </div>
@@ -165,13 +176,30 @@ const Page = (props: Props) => {
           <div className="w-[280px] h-full">
             <RenderDatePicker />
           </div>
+          {/* interval filters */}
+
           <div className="flex flex-wrap">
-            {filters.map((filter, idx) => (
+            {intervalFilters.map((filter, idx) => (
               <div className="w-[6rem]" key={idx}>
                 <FilterItem
                   key={idx}
-                  selected={selectedFilter.value === filter.value}
-                  onClick={() => setSelectedFilter(filter)}
+                  selected={interval?.value === filter.value}
+                  onClick={() => setInterval(filter)}
+                >
+                  {filter.label}
+                </FilterItem>
+              </div>
+            ))}
+          </div>
+          {/* chart rendering type filters */}
+
+          <div className="flex flex-wrap">
+            {chartRenderTypes.map((filter, idx) => (
+              <div className="w-[6rem]" key={idx}>
+                <FilterItem
+                  key={idx}
+                  selected={chartRenderType?.value === filter.value}
+                  onClick={() => setChartRenderType(filter)}
                 >
                   {filter.label}
                 </FilterItem>
@@ -193,7 +221,11 @@ const Page = (props: Props) => {
                   <span className="text-2xl font-semibold">
                     {chartData.title}
                   </span>
-                  <LineChart data={transformChartData(chartData)} />
+                  {chartRenderType?.value === 1 ? (
+                    <LineChart data={transformChartData(chartData)} />
+                  ) : (
+                    <ColumnChart data={transformChartData(chartData)} />
+                  )}
                 </div>
               );
             })

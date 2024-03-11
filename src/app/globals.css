@@ -5,3 +5,7 @@
 :root {
   color-scheme: only light;
 }
+
+svg > g > g.google-visualization-tooltip {
+  @apply pointer-events-none;
+}
