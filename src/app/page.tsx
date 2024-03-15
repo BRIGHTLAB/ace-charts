@@ -15,73 +15,26 @@ import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 
 type Props = {};
 
-const data: StatisticsData[] = [
-  {
-    title: "President Votes",
-    data: {
-      "2024": {
-        January: [
-          ["Lebanon", 20],
-          ["Jordan", 50],
-          ["Venus", 100],
-        ],
-        February: [
-          ["Lebanon", 10],
-          ["Jordan", 250],
-          ["Venus", 450],
-        ],
-      },
-    },
-  },
-  {
-    title: "Students Votes",
-    data: {
-      "2024": {
-        January: [
-          ["Lebanon", 60],
-          ["Jordan", 120],
-          ["Venus", 1780],
-        ],
-        February: [
-          ["Lebanon", 123],
-          ["Jordan", 453],
-          ["Venus", 1],
-        ],
-      },
-    },
-  },
-];
-
-const intervalFilters: IntervalFilterOption[] = [
+const intervalFilters: FilterOption[] = [
   {
     label: "Daily",
     value: "day",
-    min_date: dayjs().toDate(),
-    max_date: dayjs().add(5, "day").toDate(),
   },
   {
     label: "Weekly",
     value: "week",
-    min_date: dayjs().toDate(),
-    max_date: dayjs().add(10, "week").toDate(),
   },
   {
     label: "Monthly",
     value: "month",
-    min_date: dayjs().toDate(),
-    max_date: dayjs().add(10, "month").toDate(),
   },
   {
     label: "Quarterly",
     value: "quarter",
-    min_date: dayjs().toDate(),
-    max_date: dayjs().add(10, "year").toDate(),
   },
   {
     label: "Yearly",
     value: "year",
-    min_date: dayjs().toDate(),
-    max_date: dayjs().add(4, "year").toDate(),
   },
 ];
 
@@ -102,7 +55,7 @@ const fetcher = (url: string) =>
 const Page = (props: Props) => {
   const [dateValue, setDateValue] = useState<DateValueType | null>(null);
 
-  const [interval, setInterval] = useState<IntervalFilterOption | null>(null);
+  const [interval, setInterval] = useState<FilterOption | null>(null);
 
   const [chartRenderType, setChartRenderType] = useState<FilterOption | null>(
     null
@@ -110,8 +63,8 @@ const Page = (props: Props) => {
 
   useEffect(() => {
     setDateValue({
-      startDate: intervalFilters[0].min_date,
-      endDate: intervalFilters[0].max_date,
+      startDate: null,
+      endDate: null,
     });
     setInterval(intervalFilters[0]);
     setChartRenderType(chartRenderTypes[0]);
@@ -144,24 +97,14 @@ const Page = (props: Props) => {
     }))
   );
 
-  useEffect(() => {
-    if (!interval) return;
-    setDateValue({
-      startDate: interval.min_date,
-      endDate: interval.max_date,
-    });
-  }, [interval]);
-
   const handleValueChange = (newValue: DateValueType) => {
     setDateValue(newValue);
   };
 
   const RenderDatePicker = () => (
     <Datepicker
-      minDate={interval?.min_date}
-      maxDate={interval?.max_date}
       displayFormat="MMM D, YYYY"
-      showShortcuts={true}
+      showShortcuts={false}
       value={dateValue}
       onChange={handleValueChange}
     />
