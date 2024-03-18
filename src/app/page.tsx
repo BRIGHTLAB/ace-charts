@@ -59,7 +59,10 @@ const fetcher = (url: string) =>
   fetch(`${process.env.BASE_URL}/api${url}`).then((res) => res.json());
 
 const Page = (props: Props) => {
-  const [dateValue, setDateValue] = useState<DateValueType | null>(null);
+  const [dateValue, setDateValue] = useState<DateValueType>({
+    startDate: null,
+    endDate: null,
+  });
 
   const [interval, setInterval] = useState<FilterOption | null>(null);
 
@@ -68,10 +71,6 @@ const Page = (props: Props) => {
   );
 
   useEffect(() => {
-    setDateValue({
-      startDate: null,
-      endDate: null,
-    });
     setInterval(intervalFilters[0]);
     setChartRenderType(chartRenderTypes[0]);
   }, []);
@@ -84,6 +83,7 @@ const Page = (props: Props) => {
     queryKey: ["types"],
     queryFn: () => fetcher("/types"),
     refetchOnWindowFocus: false,
+    enabled: !!dateValue?.startDate && !!dateValue?.endDate,
   });
 
   const results = useQueries(
@@ -186,60 +186,66 @@ const Page = (props: Props) => {
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 xl:gap-10">
-          {results.length > 0 &&
-          !typesDataLoading &&
-          results.every((res) => res.isSuccess) ? (
-            <>
-              {results.every((res) => res.data.data.length < 1) ? (
-                <div className="text-center text-3xl col-span-full">
-                  No charts available
+        {!!dateValue?.startDate && !!dateValue.endDate ? (
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 xl:gap-10">
+            {results.length > 0 &&
+            !typesDataLoading &&
+            results.every((res) => res.isSuccess) ? (
+              <>
+                {results.every((res) => res.data.data.length < 1) ? (
+                  <div className="text-center text-3xl col-span-full">
+                    No charts available
+                  </div>
+                ) : (
+                  <>
+                    {
+                      <>
+                        {results.map((obj, idx) => {
+                          if (!obj.data) return;
+                          const chartData = obj.data as StatisticsData;
+                          if (Object.keys(chartData.data).length < 1) return;
+                          return (
+                            <div
+                              className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md"
+                              key={idx}
+                            >
+                              <span className="text-2xl font-semibold">
+                                {chartData.title}
+                              </span>
+                              {chartRenderType?.value === 1 ? (
+                                <LineChart
+                                  data={transformChartData(chartData)}
+                                />
+                              ) : (
+                                <ColumnChart
+                                  data={transformChartData(chartData)}
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </>
+                    }
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
+                  <ChartSkeleton />
                 </div>
-              ) : (
-                <>
-                  {
-                    <>
-                      {results.map((obj, idx) => {
-                        if (!obj.data) return;
-                        const chartData = obj.data as StatisticsData;
-                        if (Object.keys(chartData.data).length < 1) return;
-                        return (
-                          <div
-                            className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md"
-                            key={idx}
-                          >
-                            <span className="text-2xl font-semibold">
-                              {chartData.title}
-                            </span>
-                            {chartRenderType?.value === 1 ? (
-                              <LineChart data={transformChartData(chartData)} />
-                            ) : (
-                              <ColumnChart
-                                data={transformChartData(chartData)}
-                              />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </>
-                  }
-                </>
-              )}
-            </>
-          ) : (
-            <>
-              <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
-                <ChartSkeleton />
-              </div>
-              <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
-                <ChartSkeleton />
-              </div>
-              <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
-                <ChartSkeleton />
-              </div>
-            </>
-          )}
-        </div>
+                <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
+                  <ChartSkeleton />
+                </div>
+                <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">
+                  <ChartSkeleton />
+                </div>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="text-3xl text-center">Please select a date</div>
+        )}
       </div>
     </Container>
   );
