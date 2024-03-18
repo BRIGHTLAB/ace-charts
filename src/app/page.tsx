@@ -9,6 +9,7 @@ import Loading from "@/components/Loading";
 import Logo from "@/components/Logo/Logo";
 import { transformChartData } from "@/lib/utils";
 import dayjs, { Dayjs } from "dayjs";
+import Head from "next/head";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   UseQueryResult,

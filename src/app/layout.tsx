@@ -1,12 +1,8 @@
-"use client";
-
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Head from "next/head";
-
 import clsx from "clsx";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { Metadata } from "next";
+import ClientProvider from "@/providers/ClientProvider";
+import type { Metadata } from "next";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -15,16 +11,16 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
-const metadata: Metadata = {
+export const metadata: Metadata = {
   title: "Ace Gallagher",
   description: "This website shows the data as charts for different types",
 };
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const queryClient = new QueryClient();
   return (
     <html lang="en">
       <body
@@ -33,9 +29,9 @@ export default function RootLayout({
           "bg-grey-light md:text-[13px] xl:text-[16px]"
         )}
       >
-        <QueryClientProvider client={queryClient}>
+        <ClientProvider>
           <div className="min-h-screen py-5 xl:py-10 relative">{children}</div>
-        </QueryClientProvider>
+        </ClientProvider>
       </body>
     </html>
   );
