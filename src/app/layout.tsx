@@ -6,6 +6,7 @@ import Head from "next/head";
 
 import clsx from "clsx";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { Metadata } from "next";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -14,6 +15,10 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
+const metadata: Metadata = {
+  title: "Ace Gallagher",
+  description: "This website shows the data as charts for different types",
+};
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,15 +27,6 @@ export default function RootLayout({
   const queryClient = new QueryClient();
   return (
     <html lang="en">
-      <Head>
-        <title>Ace Gallagher</title>
-        <meta
-          name="description"
-          content={"Landing page that shows statistics"}
-        />
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
       <body
         className={clsx(
           poppins.className,
