@@ -31,7 +31,6 @@ export const transformChartData = (
       transformedData.push([monthYear]);
       countries.forEach((country) => {
         const voteCount = monthData.find(([c]) => c === country);
-        console.log(voteCount);
         transformedData[transformedData.length - 1].push(
           voteCount ? voteCount[1] : 0
         );
@@ -40,6 +39,5 @@ export const transformChartData = (
   });
 
   transformedData[0].push(...countries);
-  console.log("data", transformedData);
   return transformedData;
 };

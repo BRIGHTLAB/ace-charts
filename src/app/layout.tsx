@@ -6,6 +6,7 @@ import Head from "next/head";
 
 import clsx from "clsx";
 import { QueryClient, QueryClientProvider } from "react-query";
+
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],

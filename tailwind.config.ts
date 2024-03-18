@@ -12,9 +12,12 @@ const config: Config = {
       colors: {
         "grey-light": "#FAFAFA",
         "red-primary": "#BB2253",
+        "red-500": "#BB2253",
+        "red-100": "#BB225340",
       },
     },
   },
   plugins: [],
+  darkMode: "class",
 };
 export default config;

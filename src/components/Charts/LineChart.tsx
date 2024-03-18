@@ -23,7 +23,6 @@ const options = {
 };
 
 export default function LineChart(props: props) {
-  console.log(props.data);
   return (
     <Chart
       chartType="LineChart"

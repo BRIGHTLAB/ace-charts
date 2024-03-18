@@ -9,8 +9,13 @@ import Loading from "@/components/Loading";
 import Logo from "@/components/Logo/Logo";
 import { transformChartData } from "@/lib/utils";
 import dayjs, { Dayjs } from "dayjs";
-import React, { useEffect, useState } from "react";
-import { UseQueryResult, useQueries, useQuery } from "react-query";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  UseQueryResult,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "react-query";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 
 type Props = {};
@@ -80,9 +85,9 @@ const Page = (props: Props) => {
     refetchOnWindowFocus: false,
   });
 
-  const results = useQueries<StatisticsData[]>(
+  const results = useQueries(
     (typesData || []).map((type: ChartType) => ({
-      queryKey: ["Chart", type.id, dateValue],
+      queryKey: ["Chart", type.id, dateValue, interval],
       queryFn: () =>
         fetcher(
           `/data?type=${type.id}&from=${dayjs(dateValue?.startDate).format(
@@ -97,18 +102,48 @@ const Page = (props: Props) => {
     }))
   );
 
+  console.log(results);
+
+  // const results = useQueries({
+  //   queries: (typesData || []).map((type: ChartType) => ({
+  //     queryKey: ["Chart", type.id, dateValue, interval],
+  //     queryFn: () =>
+  //       fetcher(
+  //         `/data?type=${type.id}&from=${dayjs(dateValue?.startDate).format(
+  //           "YYYY-MM-DD"
+  //         )}&to=${dayjs(dateValue?.endDate).format("YYYY-MM-DD")}&filter=${
+  //           interval?.value
+  //         }`
+  //       ),
+  //     staleTime: Infinity,
+  //     refetchOnWindowFocus: false,
+  //     enabled: typesData && !typesDataLoading,
+  //   })),
+  // });
+
+  // const queryClient = useQueryClient();
+  // useEffect(() => {
+  //   queryClient.invalidateQueries();
+  // }, [dateValue, interval]);
+
   const handleValueChange = (newValue: DateValueType) => {
     setDateValue(newValue);
   };
 
-  const RenderDatePicker = () => (
-    <Datepicker
-      displayFormat="MMM D, YYYY"
-      showShortcuts={false}
-      value={dateValue}
-      onChange={handleValueChange}
-    />
+  const RenderDatePicker = useCallback(
+    () => (
+      <Datepicker
+        displayFormat="MMM D, YYYY"
+        primaryColor="red"
+        showShortcuts={false}
+        value={dateValue}
+        onChange={handleValueChange}
+      />
+    ),
+    [dateValue]
   );
+
+  console.log(results);
   return (
     <Container>
       <div className="flex flex-col gap-5 xl:gap-20">
@@ -151,27 +186,45 @@ const Page = (props: Props) => {
           </div>
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 xl:gap-10">
-          {results.length > 0 && !typesDataLoading ? (
-            results.map((obj, idx) => {
-              if (!obj.data) return;
-              const chartData = obj.data as StatisticsData;
-              if (Object.keys(chartData.data).length < 1) return;
-              return (
-                <div
-                  className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md"
-                  key={idx}
-                >
-                  <span className="text-2xl font-semibold">
-                    {chartData.title}
-                  </span>
-                  {chartRenderType?.value === 1 ? (
-                    <LineChart data={transformChartData(chartData)} />
-                  ) : (
-                    <ColumnChart data={transformChartData(chartData)} />
-                  )}
+          {results.length > 0 &&
+          !typesDataLoading &&
+          results.every((res) => res.isSuccess) ? (
+            <>
+              {results.every((res) => res.data.data.length < 1) ? (
+                <div className="text-center text-3xl col-span-full">
+                  No charts available
                 </div>
-              );
-            })
+              ) : (
+                <>
+                  {
+                    <>
+                      {results.map((obj, idx) => {
+                        if (!obj.data) return;
+                        const chartData = obj.data as StatisticsData;
+                        if (Object.keys(chartData.data).length < 1) return;
+                        return (
+                          <div
+                            className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md"
+                            key={idx}
+                          >
+                            <span className="text-2xl font-semibold">
+                              {chartData.title}
+                            </span>
+                            {chartRenderType?.value === 1 ? (
+                              <LineChart data={transformChartData(chartData)} />
+                            ) : (
+                              <ColumnChart
+                                data={transformChartData(chartData)}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </>
+                  }
+                </>
+              )}
+            </>
           ) : (
             <>
               <div className="w-full h-[20.6rem] rounded-2xl bg-white p-6 shadow-md">

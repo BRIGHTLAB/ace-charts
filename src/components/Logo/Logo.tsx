@@ -11,6 +11,7 @@ const Logo = (props: Props) => {
         className="object-contain"
         src={"/images/logo.webp"}
         alt="Logo of Ace Gallagher"
+        unoptimized
       />
     </div>
   );
