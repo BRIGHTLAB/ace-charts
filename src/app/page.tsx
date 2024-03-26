@@ -214,10 +214,12 @@ const Page = (props: Props) => {
                               </span>
                               {chartRenderType?.value === 1 ? (
                                 <LineChart
+                                  vAxisTitle={chartData.unit}
                                   data={transformChartData(chartData)}
                                 />
                               ) : (
                                 <ColumnChart
+                                  vAxisTitle={chartData.unit}
                                   data={transformChartData(chartData)}
                                 />
                               )}

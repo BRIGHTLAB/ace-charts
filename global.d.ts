@@ -1,5 +1,6 @@
 type StatisticsData = {
   title: string;
+  unit: string;
   data: {
     [year: string]: {
       [month: string]: Array<[country: string, votes: number]>;
