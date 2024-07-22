@@ -15,5 +15,5 @@ type ChartType = {
 
 type FilterOption = {
   label: string;
-  value: number | string;
+  value: number | string | null;
 };

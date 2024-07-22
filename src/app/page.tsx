@@ -7,6 +7,7 @@ import Container from "@/components/Container";
 import FilterItem from "@/components/FilterItem";
 import Loading from "@/components/Loading";
 import Logo from "@/components/Logo/Logo";
+import Select from "@/components/Select";
 import { transformChartData } from "@/lib/utils";
 import dayjs, { Dayjs } from "dayjs";
 import Head from "next/head";
@@ -17,6 +18,7 @@ import {
   useQuery,
   useQueryClient,
 } from "react-query";
+import { SingleValue } from "react-select";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 
 type Props = {};
@@ -55,6 +57,21 @@ const chartRenderTypes: FilterOption[] = [
   },
 ];
 
+const countries = [
+  {
+    id: 1,
+    name: "KSA",
+  },
+  {
+    id: 2,
+    name: "USA",
+  },
+  {
+    id: 3,
+    name: "Lebanon",
+  },
+];
+
 const fetcher = (url: string) =>
   fetch(`${process.env.BASE_URL}/api${url}`).then((res) => res.json());
 
@@ -67,6 +84,10 @@ const Page = (props: Props) => {
   const [interval, setInterval] = useState<FilterOption | null>(null);
 
   const [chartRenderType, setChartRenderType] = useState<FilterOption | null>(
+    null
+  );
+
+  const [selectedCountry, setSelectedCountry] = useState<FilterOption | null>(
     null
   );
 
@@ -157,6 +178,18 @@ const Page = (props: Props) => {
           </div>
           {/* interval filters */}
 
+          <div className="w-[200px]">
+            <Select
+              options={[
+                { label: "All", value: null },
+                ...countries.map((c) => ({ label: c.name, value: c.id })),
+              ]}
+              value={selectedCountry}
+              onChange={(value: SingleValue<FilterOption>) => {
+                setSelectedCountry(value);
+              }}
+            />
+          </div>
           <div className="flex flex-wrap">
             {intervalFilters.map((filter, idx) => (
               <div className="w-[6rem]" key={idx}>

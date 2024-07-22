@@ -17,7 +17,7 @@ export default function ColumnChart(props: props) {
       duration: 300, // Animation duration in milliseconds
     },
     vAxis: {
-      title: `${props.vAxisTitle}`,
+      title: `${props.vAxisTitle || ""}`,
       format: "short", // Use 'short' format for abbreviated numbers
       viewWindow: {
         min: 0, // Set the minimum value of the y-axis to 0

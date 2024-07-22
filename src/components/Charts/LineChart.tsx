@@ -18,7 +18,7 @@ export default function LineChart(props: props) {
     },
     chartArea: { width: "80%", height: "80%" },
     vAxis: {
-      title: `${props.vAxisTitle}`,
+      title: `${props.vAxisTitle || ""}`,
       viewWindow: {
         min: 0, // Set the minimum value of the y-axis to 0
       },
