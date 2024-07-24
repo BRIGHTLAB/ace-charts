@@ -25,14 +25,6 @@ type Props = {};
 
 const intervalFilters: FilterOption[] = [
   {
-    label: "Daily",
-    value: "day",
-  },
-  {
-    label: "Weekly",
-    value: "week",
-  },
-  {
     label: "Monthly",
     value: "month",
   },
@@ -77,8 +69,8 @@ const fetcher = (url: string) =>
 
 const Page = (props: Props) => {
   const [dateValue, setDateValue] = useState<DateValueType>({
-    startDate: null,
-    endDate: null,
+    startDate: "2024-01-01",
+    endDate: dayjs().format("YYYY-MM-DD"),
   });
 
   const [interval, setInterval] = useState<FilterOption | null>(null);
