@@ -49,27 +49,12 @@ const chartRenderTypes: FilterOption[] = [
   },
 ];
 
-const countries = [
-  {
-    id: 1,
-    name: "KSA",
-  },
-  {
-    id: 2,
-    name: "USA",
-  },
-  {
-    id: 3,
-    name: "Lebanon",
-  },
-];
-
 const fetcher = (url: string) =>
   fetch(`${process.env.BASE_URL}/api${url}`).then((res) => res.json());
 
 const Page = (props: Props) => {
   const [dateValue, setDateValue] = useState<DateValueType>({
-    startDate: "2024-01-01",
+    startDate: dayjs().startOf("year").format("YYYY-MM-DD"),
     endDate: dayjs().format("YYYY-MM-DD"),
   });
 
@@ -79,14 +64,25 @@ const Page = (props: Props) => {
     null
   );
 
-  const [selectedCountry, setSelectedCountry] = useState<FilterOption | null>(
-    null
-  );
+  const [selectedCountry, setSelectedCountry] = useState<FilterOption>({
+    label: "All",
+    value: null,
+  });
 
   useEffect(() => {
     setInterval(intervalFilters[0]);
     setChartRenderType(chartRenderTypes[0]);
   }, []);
+
+  const {
+    isLoading: countriesLoading,
+    error: countriesError,
+    data: countriesData,
+  } = useQuery<Country[]>({
+    queryKey: ["countries"],
+    queryFn: () => fetcher("/countries"),
+    refetchOnWindowFocus: false,
+  });
 
   const {
     isLoading: typesDataLoading,
@@ -101,22 +97,20 @@ const Page = (props: Props) => {
 
   const results = useQueries(
     (typesData || []).map((type: ChartType) => ({
-      queryKey: ["Chart", type.id, dateValue, interval],
+      queryKey: ["Chart", type.id, dateValue, interval, selectedCountry],
       queryFn: () =>
         fetcher(
           `/data?type=${type.id}&from=${dayjs(dateValue?.startDate).format(
             "YYYY-MM-DD"
           )}&to=${dayjs(dateValue?.endDate).format("YYYY-MM-DD")}&filter=${
             interval?.value
-          }`
+          }${selectedCountry?.value ? "&country=" + selectedCountry.value : ""}`
         ),
       staleTime: Infinity,
       refetchOnWindowFocus: false,
       enabled: typesData && !typesDataLoading,
     }))
   );
-
-  console.log(results);
 
   // const results = useQueries({
   //   queries: (typesData || []).map((type: ChartType) => ({
@@ -174,11 +168,15 @@ const Page = (props: Props) => {
             <Select
               options={[
                 { label: "All", value: null },
-                ...countries.map((c) => ({ label: c.name, value: c.id })),
+                ...(countriesData || []).map((c) => ({
+                  label: c.name,
+                  value: c.id,
+                })),
               ]}
+              isLoading={countriesLoading}
               value={selectedCountry}
               onChange={(value: SingleValue<FilterOption>) => {
-                setSelectedCountry(value);
+                if (value) setSelectedCountry(value);
               }}
             />
           </div>

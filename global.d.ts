@@ -17,3 +17,8 @@ type FilterOption = {
   label: string;
   value: number | string | null;
 };
+
+type Country = {
+  id: number;
+  name: string;
+};
